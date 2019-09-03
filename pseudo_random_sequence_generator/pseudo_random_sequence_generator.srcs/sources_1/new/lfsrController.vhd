@@ -50,7 +50,7 @@ component lfsr8bits
 end component;
 
 signal presetA : std_logic_vector(3 downto 0) := (others=>'0');
-signal reset_aux : std_logic;
+signal reset_aux, start_aux : std_logic := '0';
 signal presetB : std_logic_vector(3 downto 0) := (others=>'0');
 signal led_out_aux : std_logic_vector(7 downto 0);
 signal enable : std_logic;
@@ -60,14 +60,14 @@ begin
 		clk		=>clk,
 		preset 	=> presetA,
 		reset 	=> reset_aux,
-		start 	=> start,
+		start 	=> start_aux,
 		lfsr_out => led_out_aux(3 downto 0));
 
 	my_lfsrB: lfsr8bits port map(
 		clk		=> clk,
 		preset 	=> presetB,
 		reset 	=> reset_aux,
-		start 	=> start,
+		start 	=> start_aux,
 		lfsr_out => led_out_aux(7 downto 4));
 		
 		
@@ -75,9 +75,10 @@ begin
         begin
          if rising_edge(clk) then
             if led_out_aux(3 downto 0) = led_out_aux(7 downto 4) then
-                reset_aux <= '1';
+                start_aux <= '0';
                 enable <= '1';
             else 
+                start_aux <= start;
                 reset_aux <= reset;
                 enable <= '0';
             end if;
